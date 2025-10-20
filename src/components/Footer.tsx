@@ -13,7 +13,7 @@ export const Footer = () => {
             Building Complex Machines: Understanding Turing Machine Composition
           </p>
         </div>
-        <nav className="flex flex-wrap justify-center gap-3 md:justify-end">
+        <nav className="flex flex-wrap justify-center gap-3">
           {MODULE_ROUTES.map((route) => (
             <Link
               key={route.path}

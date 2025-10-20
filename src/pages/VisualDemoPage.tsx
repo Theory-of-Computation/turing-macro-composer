@@ -11,7 +11,8 @@ import { useComposerStore, type ComposerNodeData } from "@/features/block-editor
 const STORAGE_KEY = "tmc-composer-save";
 
 export const VisualDemoPage = () => {
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedNodeId, setSelectedNodeId] = useState<string>();
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string>();
   const [showModal, setShowModal] = useState(false);
 
   const nodes = useComposerStore((state) => state.nodes);
@@ -72,8 +73,15 @@ export const VisualDemoPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr_280px] xl:gap-8 2xl:grid-cols-[320px_1fr_360px] 2xl:gap-10">
           <BlockLibrary onCreateCustom={() => setShowModal(true)} />
-          <ComposerCanvas onSelectNode={setSelectedId} />
-          <ComposerInspector selectedId={selectedId} />
+          <ComposerCanvas onSelectNode={setSelectedNodeId} onSelectEdge={setSelectedEdgeId} />
+          <ComposerInspector
+            selectedNodeId={selectedNodeId}
+            selectedEdgeId={selectedEdgeId}
+            onClearSelection={() => {
+              setSelectedNodeId(undefined);
+              setSelectedEdgeId(undefined);
+            }}
+          />
         </div>
 
         <SimulationPanel />

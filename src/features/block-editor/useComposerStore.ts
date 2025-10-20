@@ -33,6 +33,8 @@ interface ComposerState {
   edges: Edge[];
   addNode: (data: ComposerNodeData, position?: { x: number; y: number }) => void;
   updateNode: (id: string, data: Partial<ComposerNodeData>) => void;
+  removeNode: (id: string) => void;
+  removeEdge: (id: string) => void;
   setEdges: (edges: Edge[]) => void;
   setNodes: (nodes: Node<ComposerNodeData>[]) => void;
   setTemplates: (templates: ComposerTemplate[]) => void;
@@ -185,6 +187,15 @@ export const useComposerStore = create<ComposerState>()(
           data
         };
         set((state) => ({ nodes: [...state.nodes, node] }));
+      },
+      removeNode: (id: string) => {
+        set((state) => ({
+          nodes: state.nodes.filter((node) => node.id !== id),
+          edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id)
+        }));
+      },
+      removeEdge: (id: string) => {
+        set((state) => ({ edges: state.edges.filter((edge) => edge.id !== id) }));
       },
       updateNode: (id: string, updates: Partial<ComposerNodeData>) => {
         set((state) => ({

@@ -36,14 +36,14 @@ const LIBRARY: (ComposerNodeData & { id: string })[] = [
     kind: "copier",
     pseudocode: "copy until blank"
   },
-  {
-    id: "conditional",
-    label: "Conditional",
-    description: "Routes by flag",
-    ports: { inputs: 1, outputs: 2 },
-    kind: "conditional",
-    pseudocode: "if flag then path A else path B"
-  }
+  // {
+  //   id: "conditional",
+  //   label: "Conditional",
+  //   description: "Routes by flag",
+  //   ports: { inputs: 1, outputs: 2 },
+  //   kind: "conditional",
+  //   pseudocode: "if flag then path A else path B"
+  // }
 ];
 
 export const BlockLibrary = ({
@@ -62,7 +62,7 @@ export const BlockLibrary = ({
     <div className="flex h-full flex-col gap-4 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-inner dark:border-slate-800 dark:bg-slate-900/60 xl:gap-5 xl:p-6 2xl:gap-6 2xl:p-7">
       <header className="flex flex-wrap items-center justify-between gap-3 xl:gap-4">
         <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 xl:text-base 2xl:text-base">Blocks</h3>
-        <div className="flex flex-wrap items-center gap-1 text-xs xl:gap-2 xl:text-sm 2xl:gap-3 2xl:text-sm">
+        {/* <div className="flex flex-wrap items-center gap-1 text-xs xl:gap-2 xl:text-sm 2xl:gap-3 2xl:text-sm">
           <button
             type="button"
             onClick={() => setSelectedKind("all")}
@@ -80,7 +80,7 @@ export const BlockLibrary = ({
               {kind}
             </button>
           ))}
-        </div>
+        </div> */}
       </header>
       <div className="flex-1 space-y-3 overflow-y-auto pr-1 xl:space-y-4 2xl:space-y-5">
         {blocks.map((block) => (
@@ -91,9 +91,9 @@ export const BlockLibrary = ({
             onClick={() => addNode(block)}
             className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm shadow-sm transition hover:border-primary hover:bg-primary/10 dark:border-slate-700 dark:bg-slate-900 xl:px-5 xl:py-4 xl:text-base 2xl:px-6 2xl:py-5 2xl:text-base"
           >
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex max-md:flex-wrap items-center justify-between gap-2">
               <p className="font-semibold text-slate-800 dark:text-slate-100">{block.label}</p>
-              <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.3em] text-primary xl:px-3 xl:py-1 xl:text-xs 2xl:px-4 2xl:text-xs">
+              <span className="rounded-full bg-primary/20 px-1 py-0.5 text-[10px] uppercase tracking-[0.3em] text-primary xl:px-1.5 xl:py-1 xl:text-xs 2xl:px-2 2xl:text-xs text-center">
                 {block.ports.inputs}/{block.ports.outputs} I/O
               </span>
             </div>
