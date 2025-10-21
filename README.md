@@ -40,29 +40,6 @@ src/
    - Conditions like `if input > 0` or `if input is zero`
 3. Wire the block alongside canonical components, then run a simulation to verify outputs and highlighted branches.
 
-## Deployment
-
-### Preparing for GitHub Pages
-
-1. Update `vite.config.ts` with the repository base path before building:
-   ```ts
-   export default defineConfig({
-     base: "/<repo-name>/",
-     // ...existing config
-   });
-   ```
-2. Regenerate the production build:
-   ```bash
-   npm run build
-   ```
-3. Commit `dist/` to a dedicated `gh-pages` branch or publish via GitHub Actions (see below).
-
-### Publishing via GitHub Actions
-
-1. Create `.github/workflows/deploy.yml` with a Vite Pages workflow (uses `npm ci`, `npm run build`, uploads `dist`).
-2. Push to the default branch; the action will deploy to the `gh-pages` branch automatically.
-3. In the repository settings, enable **Pages** → **Deploy from branch** → `gh-pages` / `/(root)`.
-
 ## Contributing
 
 - Use conventional commits (e.g., `feat:`, `fix:`).
