@@ -122,9 +122,29 @@ const evaluateCustomBlock = (
     return { outputs: createOutputs(next), note: `${primaryValue} × 2 = ${next}` };
   }
 
-  if (/(multiply|times)/.test(lower) && typeof numberInText === "number") {
-    const next = clampToUnary(primaryValue * numberInText);
-    return { outputs: createOutputs(next), note: `${primaryValue} × ${numberInText} = ${next}` };
+  if (/(multiply|times)/.test(lower)) {
+    if (typeof numberInText === "number") {
+      const next = clampToUnary(primaryValue * numberInText);
+      return { outputs: createOutputs(next), note: `${primaryValue} × ${numberInText} = ${next}` };
+    }
+
+    const referencesSecond = /(second|other|another|next|input\s*(two|2)|y\b)/.test(lower);
+    const factors = (() => {
+      if (referencesSecond) {
+        const secondary = inputs.length > 1 ? secondaryValue : 1;
+        return [primaryValue, secondary];
+      }
+      if (inputs.length > 1) {
+        return inputs;
+      }
+      return [primaryValue];
+    })();
+
+    const product = clampToUnary(factors.reduce((total, current) => total * current, 1));
+    return {
+      outputs: createOutputs(product),
+      note: `${factors.join(" × ")} = ${product}`
+    };
   }
 
   if (/(halve|divide\s+by\s+2)/.test(lower)) {
