@@ -1,31 +1,133 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 
-const steps = [
+type TapeCellRole = "x" | "y" | "marker" | "separator" | "result" | "blank" | "consumed";
+
+interface TapeCell {
+  symbol: string;
+  role: TapeCellRole;
+  head?: boolean;
+}
+
+interface MultiplicationStep {
+  title: string;
+  description: string;
+  state: string;
+  tape: TapeCell[];
+  note?: string;
+}
+
+const ROLE_LABEL: Record<TapeCellRole, string> = {
+  x: "Input x cell",
+  y: "Input y cell",
+  marker: "Marked x cell",
+  separator: "Tape separator",
+  result: "Result accumulator",
+  blank: "Blank cell",
+  consumed: "Marked y cell"
+};
+
+const ROLE_STYLES: Record<TapeCellRole, string> = {
+  x: "border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-500/70 dark:bg-sky-500/10 dark:text-sky-200",
+  y: "border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-500/70 dark:bg-violet-500/10 dark:text-violet-200",
+  marker: "border-amber-400 bg-amber-50 text-amber-600 dark:border-amber-400/70 dark:bg-amber-400/10 dark:text-amber-200",
+  separator: "border-slate-300 bg-slate-100 text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300",
+  result: "border-emerald-500 bg-emerald-50 text-emerald-600 dark:border-emerald-400/70 dark:bg-emerald-400/10 dark:text-emerald-200",
+  blank: "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500",
+  consumed: "border-violet-300 bg-violet-100 text-violet-600 dark:border-violet-400/60 dark:bg-violet-400/10 dark:text-violet-200"
+};
+
+const steps: MultiplicationStep[] = [
   {
-    title: "Mark the next 1 in x",
-    description: "Replace the leading 1 in x with a marker a to remember progress.",
-    tape: "aaa#bbb#",
-    state: "q_mark"
+    title: "Mark the next symbol in x",
+    description: "The head highlights the leftmost 1 of x so we remember which copy we are working on before moving toward y.",
+    state: "q_mark",
+    note: "Amber shows the marked symbol in x. Purple cells belong to y, and green cells will hold the running product.",
+    tape: [
+      { symbol: "X", role: "marker", head: true },
+      { symbol: "1", role: "x" },
+      { symbol: "1", role: "x" },
+      { symbol: "□", role: "separator" },
+      { symbol: "1", role: "y" },
+      { symbol: "1", role: "y" },
+      { symbol: "1", role: "y" },
+      { symbol: "□", role: "separator" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" }
+    ]
   },
   {
-    title: "Copy y",
-    description: "Copy the string y to the end of the tape to accumulate product.",
-    tape: "aaay#bbb#bbb",
-    state: "q_copy"
+    title: "Copy y into the accumulator",
+    description: "We shuttle across y. Every time we encounter a 1 in y, we append a new 1 at the end of the tape to grow the product region.",
+    state: "q_copy",
+    note: "Consumed y symbols temporarily change to Y so we know they have been paired with the current mark in x.",
+    tape: [
+      { symbol: "X", role: "marker" },
+      { symbol: "1", role: "x" },
+      { symbol: "1", role: "x" },
+      { symbol: "□", role: "separator" },
+      { symbol: "Y", role: "consumed" },
+      { symbol: "Y", role: "consumed" },
+      { symbol: "1", role: "y", head: true },
+      { symbol: "□", role: "separator" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" }
+    ]
   },
   {
-    title: "Restore marker",
-    description: "Turn marker a back to 1 and move left to look for more 1s in x.",
-    tape: "111#bbb#bbb",
-    state: "q_restore"
+    title: "Restore and return to x",
+    description: "After copying, the machine rewinds left, unmarks the X back to 1, and gets ready to look for the next unprocessed symbol in x.",
+    state: "q_restore",
+    note: "The head is back over the x block so the loop can continue with the next 1.",
+    tape: [
+      { symbol: "1", role: "x", head: true },
+      { symbol: "1", role: "x" },
+      { symbol: "1", role: "x" },
+      { symbol: "□", role: "separator" },
+      { symbol: "1", role: "y" },
+      { symbol: "1", role: "y" },
+      { symbol: "1", role: "y" },
+      { symbol: "□", role: "separator" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "□", role: "result" },
+      { symbol: "□", role: "result" }
+    ]
   },
   {
-    title: "Check for next 1",
-    description: "If another 1 exists, loop; otherwise halt with result on tape.",
-    tape: "111#bbb#bbbbbb",
-    state: "q_check"
+    title: "Final check and halt",
+    description: "Once every 1 in x has been processed, the machine leaves blanks behind and halts with the full product in the accumulator region.",
+    state: "q_check",
+    note: "All of x and y have been cleared, and the result region now contains nine 1s representing 3 × 3.",
+    tape: [
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "separator" },
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "blank" },
+      { symbol: "□", role: "separator" },
+      { symbol: "1", role: "result", head: true },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "1", role: "result" },
+      { symbol: "□", role: "blank" }
+    ]
   }
 ];
 
@@ -81,22 +183,33 @@ export const MultiplicationExamplePage = () => {
                   <div className="rounded-2xl border border-dashed border-primary/40 bg-primary/10 p-4 xl:p-5 2xl:p-6">
                     <p className="text-xs uppercase tracking-[0.3em] text-primary xl:text-sm 2xl:text-base">Tape snapshot</p>
                     <div className="mt-3 flex flex-wrap gap-1 xl:gap-2">
-                      {step.tape.split("").map((symbol, idx) => (
+                      {step.tape.map((cell, idx) => (
                         <span
-                          key={`${symbol}-${idx}`}
-                          className={`flex h-10 w-10 items-center justify-center rounded-lg border text-base font-semibold xl:h-12 xl:w-12 xl:text-lg 2xl:h-14 2xl:w-14 2xl:text-xl ${
-                            symbol === "#"
-                              ? "border-amber-400 bg-amber-50 text-amber-600"
-                              : symbol === "a"
-                                ? "border-emerald-500 bg-emerald-50 text-emerald-600"
-                                : "border-slate-300 bg-white text-slate-700"
-                          } dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200`}
+                          key={`${idx}-${cell.symbol}-${cell.role}`}
+                          title={ROLE_LABEL[cell.role]}
+                          className={cn(
+                            "relative flex h-10 w-10 items-center justify-center rounded-xl border text-base font-semibold uppercase tracking-[0.15em] transition xl:h-12 xl:w-12 xl:text-lg 2xl:h-14 2xl:w-14 2xl:text-xl",
+                            "dark:shadow-[0_0_0_1px_rgba(15,23,42,0.35)]",
+                            ROLE_STYLES[cell.role],
+                            cell.head &&
+                              "ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
+                          )}
                         >
-                          {symbol === "#" ? "#" : symbol}
+                          {cell.symbol}
+                          {cell.head && (
+                            <span className="absolute -top-3 text-[0.55rem] font-semibold uppercase tracking-[0.3em] text-primary dark:text-primary-200">
+                              head
+                            </span>
+                          )}
                         </span>
                       ))}
                     </div>
                   </div>
+                  {step.note && (
+                    <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-xs leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 xl:p-5 xl:text-sm 2xl:p-6 2xl:text-base">
+                      {step.note}
+                    </div>
+                  )}
                   <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 text-xs uppercase tracking-[0.3em] text-primary dark:border-slate-800 dark:bg-slate-900/70 xl:p-5 xl:text-sm 2xl:p-6 2xl:text-base">
                     Current state: {step.state}
                   </div>
