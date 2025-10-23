@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type { ChangeEventHandler } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { BlockLibrary } from "@/features/block-editor/BlockLibrary";
@@ -14,6 +15,7 @@ export const VisualDemoPage = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string>();
   const [selectedEdgeId, setSelectedEdgeId] = useState<string>();
   const [showModal, setShowModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const nodes = useComposerStore((state) => state.nodes);
   const edges = useComposerStore((state) => state.edges);
@@ -25,6 +27,57 @@ export const VisualDemoPage = () => {
   const handleSave = () => {
     const payload = JSON.stringify({ nodes, edges });
     window.localStorage.setItem(STORAGE_KEY, payload);
+  };
+
+  const handleExport = () => {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      nodes,
+      edges
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json"
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "turing-composer.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportFile: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      try {
+        const text = loadEvent.target?.result;
+        if (typeof text !== "string") {
+          throw new Error("Invalid file contents");
+        }
+        const parsed = JSON.parse(text) as {
+          nodes: typeof nodes;
+          edges: typeof edges;
+        };
+        setNodes(parsed.nodes);
+        setEdges(parsed.edges);
+      } catch (error) {
+        console.warn("Failed to import composition", error);
+      } finally {
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleLoad = () => {
@@ -65,6 +118,12 @@ export const VisualDemoPage = () => {
             <Button variant="primary" onClick={handleSave}>
               Save
             </Button>
+            <Button variant="outline" onClick={handleExport}>
+              Export JSON
+            </Button>
+            <Button variant="outline" onClick={handleImportClick}>
+              Import JSON
+            </Button>
             <Button variant="outline" onClick={() => setShowModal(true)}>
               Custom block
             </Button>
@@ -91,6 +150,14 @@ export const VisualDemoPage = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleCreateCustom}
+      />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json"
+        className="hidden"
+        onChange={handleImportFile}
       />
     </section>
   );

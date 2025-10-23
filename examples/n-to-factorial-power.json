@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "exportedAt": "2025-10-23T13:46:02.102Z",
+  "nodes": [
+    {
+      "id": "input-n",
+      "type": "input",
+      "position": {
+        "x": -340,
+        "y": 20
+      },
+      "data": {
+        "label": "Input n",
+        "description": "Unary input n",
+        "ports": {
+          "inputs": 0,
+          "outputs": 1
+        },
+        "kind": "custom"
+      },
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "duplicate-n",
+      "type": "default",
+      "position": {
+        "x": -80,
+        "y": 20
+      },
+      "data": {
+        "label": "Duplicate n",
+        "description": "Creates base and factorial branches",
+        "ports": {
+          "inputs": 1,
+          "outputs": 2
+        },
+        "kind": "copier",
+        "pseudocode": "copy input"
+      },
+      "width": 150,
+      "height": 218
+    },
+    {
+      "id": "factorial",
+      "type": "default",
+      "position": {
+        "x": 200,
+        "y": 120
+      },
+      "data": {
+        "label": "Factorial",
+        "description": "Computes n! for the exponent",
+        "ports": {
+          "inputs": 1,
+          "outputs": 1
+        },
+        "kind": "custom",
+        "pseudocode": "factorial input"
+      },
+      "width": 150,
+      "height": 218
+    },
+    {
+      "id": "power-block",
+      "type": "default",
+      "position": {
+        "x": 471.67798891626853,
+        "y": -27.629259663606263
+      },
+      "data": {
+        "label": "Exponentiate",
+        "description": "Raise x to the y power",
+        "ports": {
+          "inputs": 2,
+          "outputs": 1
+        },
+        "kind": "custom",
+        "pseudocode": "power base exponent"
+      },
+      "width": 150,
+      "height": 240,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 471.67798891626853,
+        "y": -27.629259663606263
+      },
+      "dragging": false
+    },
+    {
+      "id": "output",
+      "type": "default",
+      "position": {
+        "x": 789.0731491590159,
+        "y": -9.356088392581682
+      },
+      "data": {
+        "label": "Result",
+        "description": "Outputs n^(n!)",
+        "ports": {
+          "inputs": 1,
+          "outputs": 0
+        },
+        "kind": "custom",
+        "pseudocode": "result"
+      },
+      "width": 150,
+      "height": 191,
+      "selected": true,
+      "positionAbsolute": {
+        "x": 789.0731491590159,
+        "y": -9.356088392581682
+      },
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-input-duplicate",
+      "source": "input-n",
+      "target": "duplicate-n"
+    },
+    {
+      "id": "edge-base",
+      "source": "duplicate-n",
+      "target": "power",
+      "sourceHandle": "out-0",
+      "targetHandle": "in-0",
+      "label": "base"
+    },
+    {
+      "id": "edge-factorial-input",
+      "source": "duplicate-n",
+      "target": "factorial",
+      "sourceHandle": "out-1"
+    },
+    {
+      "id": "edge-factorial-power",
+      "source": "factorial",
+      "target": "power",
+      "targetHandle": "in-1",
+      "label": "exponent"
+    },
+    {
+      "id": "edge-power-output",
+      "source": "power",
+      "target": "output"
+    },
+    {
+      "source": "duplicate-n",
+      "sourceHandle": "out-0",
+      "target": "power-block",
+      "targetHandle": "in-0",
+      "animated": true,
+      "id": "reactflow__edge-duplicate-nout-0-power-blockin-0"
+    },
+    {
+      "source": "factorial",
+      "sourceHandle": "out-0",
+      "target": "power-block",
+      "targetHandle": "in-1",
+      "animated": true,
+      "id": "reactflow__edge-factorialout-0-power-blockin-1"
+    },
+    {
+      "source": "power-block",
+      "sourceHandle": "out-0",
+      "target": "output",
+      "targetHandle": "in-0",
+      "animated": true,
+      "id": "reactflow__edge-power-blockout-0-outputin-0"
+    }
+  ]
+}

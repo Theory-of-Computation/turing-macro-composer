@@ -1,0 +1,73 @@
+{
+    "version": 1,
+    "exportedAt": "2025-10-23T00:00:00.000Z",
+    "title": "Example: f(n) = n(n + 1)",
+    "description": "Duplicates the input, increments one branch, and multiplies to produce n(n+1).",
+    "nodes": [{
+            "id": "input-n",
+            "type": "input",
+            "position": { "x": -320, "y": 40 },
+            "data": {
+                "label": "Input n",
+                "description": "Unary input n",
+                "ports": { "inputs": 0, "outputs": 1 },
+                "kind": "custom"
+            }
+        },
+        {
+            "id": "duplicate-n",
+            "type": "default",
+            "position": { "x": -40, "y": 40 },
+            "data": {
+                "label": "Duplicate n",
+                "description": "Copies the input onto two tracks",
+                "ports": { "inputs": 1, "outputs": 2 },
+                "kind": "copier",
+                "pseudocode": "copy input"
+            }
+        },
+        {
+            "id": "increment",
+            "type": "default",
+            "position": { "x": 200, "y": 140 },
+            "data": {
+                "label": "Increment",
+                "description": "Computes n + 1 on the second branch",
+                "ports": { "inputs": 1, "outputs": 1 },
+                "kind": "custom",
+                "pseudocode": "add 1"
+            }
+        },
+        {
+            "id": "multiplier",
+            "type": "default",
+            "position": { "x": 440, "y": 40 },
+            "data": {
+                "label": "Multiply",
+                "description": "Combines n and n + 1",
+                "ports": { "inputs": 2, "outputs": 1 },
+                "kind": "multiplier",
+                "pseudocode": "multiply"
+            }
+        },
+        {
+            "id": "output",
+            "type": "default",
+            "position": { "x": 680, "y": 40 },
+            "data": {
+                "label": "Result",
+                "description": "Outputs n(n + 1)",
+                "ports": { "inputs": 1, "outputs": 0 },
+                "kind": "custom",
+                "pseudocode": "result"
+            }
+        }
+    ],
+    "edges": [
+        { "id": "edge-input-duplicate", "source": "input-n", "target": "duplicate-n" },
+        { "id": "edge-duplicate-top", "source": "duplicate-n", "target": "multiplier", "sourceHandle": "out-0", "targetHandle": "in-0" },
+        { "id": "edge-duplicate-bottom", "source": "duplicate-n", "target": "increment", "sourceHandle": "out-1" },
+        { "id": "edge-increment-multiplier", "source": "increment", "target": "multiplier", "targetHandle": "in-1" },
+        { "id": "edge-multiplier-output", "source": "multiplier", "target": "output" }
+    ]
+}

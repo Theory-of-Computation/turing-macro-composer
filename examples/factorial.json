@@ -1,0 +1,46 @@
+{
+    "version": 1,
+    "exportedAt": "2025-10-23T00:00:00.000Z",
+    "title": "Example: f(n) = n!",
+    "description": "Uses a factorial macro block to compute the unary factorial of the input.",
+    "nodes": [{
+            "id": "input-n",
+            "type": "input",
+            "position": { "x": -300, "y": 0 },
+            "data": {
+                "label": "Input n",
+                "description": "Unary input n",
+                "ports": { "inputs": 0, "outputs": 1 },
+                "kind": "custom"
+            }
+        },
+        {
+            "id": "factorial",
+            "type": "default",
+            "position": { "x": 60, "y": 0 },
+            "data": {
+                "label": "Factorial",
+                "description": "Computes n! in unary",
+                "ports": { "inputs": 1, "outputs": 1 },
+                "kind": "custom",
+                "pseudocode": "factorial input"
+            }
+        },
+        {
+            "id": "output",
+            "type": "default",
+            "position": { "x": 380, "y": 0 },
+            "data": {
+                "label": "Result",
+                "description": "Outputs n!",
+                "ports": { "inputs": 1, "outputs": 0 },
+                "kind": "custom",
+                "pseudocode": "result"
+            }
+        }
+    ],
+    "edges": [
+        { "id": "edge-input-factorial", "source": "input-n", "target": "factorial" },
+        { "id": "edge-factorial-output", "source": "factorial", "target": "output" }
+    ]
+}

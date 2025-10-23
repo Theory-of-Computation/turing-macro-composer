@@ -1,0 +1,84 @@
+{
+    "version": 1,
+    "exportedAt": "2025-10-23T00:00:00.000Z",
+    "title": "Exponentiation: f(x, y) = x^y",
+    "description": "Shows a macro block that raises the base x to the exponent y and emits the result in unary.",
+    "nodes": [{
+            "id": "input-x",
+            "type": "input",
+            "position": { "x": -300, "y": -80 },
+            "data": {
+                "label": "Input x",
+                "description": "Unary input x",
+                "ports": { "inputs": 0, "outputs": 1 },
+                "kind": "custom"
+            }
+        },
+        {
+            "id": "input-y",
+            "type": "input",
+            "position": { "x": -300, "y": 140 },
+            "data": {
+                "label": "Input y",
+                "description": "Unary input y (exponent)",
+                "ports": { "inputs": 0, "outputs": 1 },
+                "kind": "custom"
+            }
+        },
+        {
+            "id": "buffer-base",
+            "type": "default",
+            "position": { "x": -40, "y": -120 },
+            "data": {
+                "label": "Prepare base",
+                "description": "Optionally normalize the base before powering",
+                "ports": { "inputs": 1, "outputs": 1 },
+                "kind": "custom",
+                "pseudocode": "copy input"
+            }
+        },
+        {
+            "id": "buffer-exponent",
+            "type": "default",
+            "position": { "x": -40, "y": 140 },
+            "data": {
+                "label": "Prepare exponent",
+                "description": "Ensures the exponent flows into the power block",
+                "ports": { "inputs": 1, "outputs": 1 },
+                "kind": "custom",
+                "pseudocode": "copy input"
+            }
+        },
+        {
+            "id": "power-block",
+            "type": "default",
+            "position": { "x": 280, "y": 0 },
+            "data": {
+                "label": "Exponentiate",
+                "description": "Raise x to the y power",
+                "ports": { "inputs": 2, "outputs": 1 },
+                "kind": "custom",
+                "pseudocode": "power base exponent"
+            }
+        },
+        {
+            "id": "output-result",
+            "type": "default",
+            "position": { "x": 560, "y": 0 },
+            "data": {
+                "label": "Result",
+                "description": "Displays the unary encoding of x^y",
+                "ports": { "inputs": 1, "outputs": 0 },
+                "kind": "custom",
+                "pseudocode": "result"
+            }
+        }
+    ],
+    "edges": [
+        { "id": "edge-base", "source": "input-x", "target": "buffer-base", "label": "x" },
+        { "id": "edge-buffer-base-to-power", "source": "buffer-base", "target": "power-block", "label": "base", "targetHandle": "in-0" },
+        { "id": "edge-exp", "source": "input-y", "target": "buffer-exponent", "label": "y" },
+        { "id": "edge-buffer-exp-to-power", "source": "buffer-exponent", "target": "power-block", "label": "exponent", "targetHandle": "in-1" },
+        { "id": "edge-power-output", "source": "power-block", "target": "output-result", "label": "x^y" }
+    ]
+}

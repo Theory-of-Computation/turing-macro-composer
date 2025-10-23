@@ -122,6 +122,40 @@ const evaluateCustomBlock = (
     return { outputs: createOutputs(next), note: `${primaryValue} × 2 = ${next}` };
   }
 
+  if (/(factorial|n!)/.test(lower)) {
+    const limit = Math.max(0, clampToUnary(primaryValue));
+    let factorial = 1;
+    for (let index = 2; index <= limit; index += 1) {
+      factorial *= index;
+      if (!Number.isFinite(factorial)) {
+        factorial = Number.MAX_SAFE_INTEGER;
+        break;
+      }
+    }
+    const next = clampToUnary(factorial);
+    return { outputs: createOutputs(next), note: `${primaryValue}! = ${next}` };
+  }
+
+  if (/(power|exponent|exponentiation|raise)/.test(lower)) {
+    const exponentValue = (() => {
+      if (typeof numberInText === "number") {
+        return numberInText;
+      }
+      if (inputs.length > 1 && !Number.isNaN(secondaryValue)) {
+        return secondaryValue;
+      }
+      return 1;
+    })();
+
+    const baseValue = primaryValue;
+    const result = clampToUnary(Math.pow(baseValue, exponentValue));
+
+    return {
+      outputs: createOutputs(result),
+      note: `${baseValue} ^ ${exponentValue} = ${result}`
+    };
+  }
+
   if (/(multiply|times)/.test(lower)) {
     if (typeof numberInText === "number") {
       const next = clampToUnary(primaryValue * numberInText);

@@ -15,19 +15,25 @@ const VALID_WORD_TOKENS = [
   "divide",
   "double",
   "duplicate",
+  "exponent",
+  "exponentiation",
   "else",
   "erase",
   "fan-out",
   "fanout",
   "false",
+  "base",
+  "factorial",
   "if",
   "increment",
   "input",
   "nonzero",
+  "power",
   "positive",
   "remove",
   "reset",
   "second",
+  "result",
   "subtract",
   "then",
   "times",
@@ -45,7 +51,21 @@ const VALID_COMPARATORS = new Set(COMPARATOR_TOKENS);
 const TOKEN_GROUPS = [
   {
     label: "Actions",
-    tokens: ["copy", "increment", "decrement", "erase", "clear", "add", "subtract", "multiply", "divide", "halve", "double"]
+    tokens: [
+      "copy",
+      "increment",
+      "decrement",
+      "erase",
+      "clear",
+      "add",
+      "subtract",
+      "multiply",
+      "divide",
+      "halve",
+      "double",
+      "power",
+      "factorial"
+    ]
   },
   {
     label: "Conditions",
@@ -53,7 +73,7 @@ const TOKEN_GROUPS = [
   },
   {
     label: "References",
-    tokens: ["input", "second", "value", "then", "else", "true", "false"]
+    tokens: ["input", "second", "value", "base", "exponent", "then", "else", "true", "false", "result"]
   }
 ];
 
